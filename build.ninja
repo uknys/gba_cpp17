@@ -1,0 +1,34 @@
+ninja_required_version = 1.8
+
+root     =  .
+builddir =  build
+
+cxx      =  arm-none-eabi-g++
+objcopy  =  arm-none-eabi-objcopy
+
+includes =  -I$root/inc
+
+cxxflags =  -std=c++17 -Os -mthumb -mthumb-interwork  $
+            -fno-strict-aliasing -fomit-frame-pointer $
+            -ffast-math -fno-exceptions -fno-rtti     $
+            -Wall -Wextra -Werror $includes
+ldflags  =  -mthumb -mthumb-interwork -specs=gba.specs
+
+rule cxx
+  command = $cxx -MMD -MT $out -MF $out.d -c $in -o $out $cxxflags
+  description = CXX $out
+  depfile = $out.d
+  deps = gcc
+
+rule link
+  command = $cxx $ldflags -o $out $in $libs
+  description = LINK $out
+
+rule objcopy
+  command = $objcopy -O binary $in $out
+  description = OBJCOPY $out
+
+build $builddir/gba.o    : cxx $root/src/gba.cpp
+build $builddir/main.o   : cxx $root/src/main.cpp
+build $builddir/main.elf : link $builddir/gba.o $builddir/main.o
+build $builddir/main.gba : objcopy $builddir/main.elf 
