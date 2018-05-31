@@ -75,5 +75,6 @@ Temporary Items
 .history
 
 build
+.vagrant
 
 # End of https://www.gitignore.io/api/c++,ninja,macos,visualstudiocode
